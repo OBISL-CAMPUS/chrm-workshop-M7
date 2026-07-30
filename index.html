@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBISL Campus | Performance & Compensation Command Center</title>
+    
+    <!-- React, ReactDOM, and Babel via CDNs -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Custom Preset Registration for Classic React Runtime -->
+    <script>
+        Babel.registerPreset('custom-react', {
+            presets: [
+                [Babel.availablePresets['react'], { runtime: 'classic' }]
+            ]
+        });
+    </script>
+    
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            950: '#030712',
+                        },
+                        brand: {
+                            50: '#ecfdf5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                        },
+                        tech: {
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        sinhala: ['Iskoola Pota', 'Noto Sans Sinhala', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style type="text/css">
+        /* Hide scrollbars but preserve functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Glassmorphism custom styling */
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Ambient Glowing Pulse */
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.15); }
+        }
+        .glow-orb {
+            animation: pulseGlow 8s infinite ease-in-out;
+        }
+
+        /* Print Optimization */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-container {
+                width: 100% !important;
+                max-width: 100% !important;
+                position: static !important;
+                box-shadow: none !important;
+                background: white !important;
+                color: black !important;
+                border: none !important;
+            }
+            .glass-panel {
+                background: white !important;
+                backdrop-filter: none !important;
+                border: 1px solid #94a3b8 !important;
+                color: black !important;
+            }
+            text, h1, h2, h3, h4, p, span, div, li {
+                color: black !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen relative overflow-x-hidden">
+
+    <!-- Ambient Glowing Background Orbs (Non-Interactive) -->
+    <div class="absolute top-10 left-10 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl glow-orb pointer-events-none no-print"></div>
+    <div class="absolute bottom-20 right-20 w-[32rem] h-[32rem] bg-tech-500/10 rounded-full blur-3xl glow-orb pointer-events-none no-print" style="animation-delay: 4s;"></div>
+
+    <div id="root"></div>
+
+    <!-- Application Script Block with React -->
+    <script type="text/babel" data-presets="custom-react">
+
+        // --- INLINE SVG COMPONENTS ---
+        const IconCase = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>;
+        const IconAnalysis = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>;
+        const IconScenario = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>;
+        const IconCalculator = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>;
+        const IconSim1 = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>;
+        const IconSim2 = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>;
+        const IconSim3 = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.5M4 20v-5h.581m0 0a8.003 8.003 0 0015.357-2F5.513 15.513 0 0118.5 20H15.5"/></svg>;
+        const IconDiscuss = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l4-4z"/></svg>;
+        const IconPrint = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>;
+
+        // --- MASTER TRANSLATION DICTIONARY ---
+        const translations = {
+            en: {
+                campus: "OBISL CAMPUS",
+                practicum: "PRACTICUM SESSION",
+                subtitle: "Module 7: Performance & Compensation Architecture",
+                liveStatus: "Console Live • English",
+                exportBtn: "Export / Print",
+                nav: {
+                    case: "Case Insight",
+                    deep: "Deep Dive Analysis",
+                    scenarios: "Scenario Suite",
+                    diagnostic: "Diagnostic Lab",
+                    sim1: "Framework Demo",
+                    sim2: "The Cascade Sim",
+                    sim3: "Workflow Loops",
+                    breakout: "Breakout Rooms"
+                },
+                case: {
+                    title: "Case Analysis: Vanguard Tech Solutions",
+                    intro: "A rigorous exploration of strategic performance turnaround from organizational distress to high growth.",
+                    probTitle: "The Systemic Core Problem",
+                    probDesc: "An outdated, forced-ranking appraisal system paired with severe salary compression led to high employee frustration, 40% planned exit rates, and elite performers being paid lower than newly hired staff.",
+                    approachTitle: "Strategic Intervention",
+                    approachDesc: "The organization abolished forced rankings, instituting customized continuous feedback loops, dual MBO objectives, and detailed Compa-Ratio formulas to execute market-aligned out-of-cycle fairness adjustments.",
+                    resultTitle: "Organizational Output Metrics",
+                    resultDesc: "Voluntary high-performer turnover was drastically minimized from 18% to 4%, organizational target clarity surged from 31% to 85%, and year-over-year commercial revenue expanded by 11%."
+                },
+                deep: {
+                    title: "Theoretical Core Traits & Conflicts",
+                    intro: "Navigate the foundational HR paradoxes. Select any trait card to inspect its core structural challenge.",
+                    cards: [
+                        {
+                            label: "Performance Appraisals",
+                            title: "Annual Appraisal vs Continuous Feedback",
+                            desc: "Retrospective assessments usually introduce high recency bias. Transforming these into frequent continuous feedback cycles fosters agility, enabling managers to transition from retrospective judges to real-time strategic growth coaches."
+                        },
+                        {
+                            label: "Strategic Measurement",
+                            title: "MBO Goals vs Quantitative Tunnel Vision",
+                            desc: "Management-by-Objectives directly increases goal-driven operational outputs. However, if unmonitored, it runs a heavy systemic risk of creating qualitative tunnel vision, where key collaborative cultural behaviors are ignored for pure metrics."
+                        },
+                        {
+                            label: "Total Rewards Design",
+                            title: "Fixed Basic Pay vs Motivated Total Rewards",
+                            desc: "While standard basic salaries prevent hygiene dissatisfaction, they do not inherently drive maximum capability. Elite architectures design a balanced configuration of base pay, performance incentives, and intrinsic motivators like Autonomy, Mastery, and Purpose."
+                        }
+                    ]
+                },
+                scenarios: {
+                    title: "Practical Scenario Suite",
+                    intro: "Review localized Sri Lankan corporate dilemmas and select structural solutions directly based on the curriculum notes.",
+                    scenarios: [
+                        {
+                            id: "A",
+                            tag: "Retention / Feedback Action",
+                            situation: "An enterprise software firm in Colombo faces a 22% spike in voluntary turnover directly after rigid, annual retrospective scorecards are issued.",
+                            solution: "The management introduces bi-weekly Situation-Behavior-Impact (SBI) feedback conversations, clarifying immediate project goals and reducing retrospective review shock. Staff turnover drops to 9%."
+                        },
+                        {
+                            id: "B",
+                            tag: "Compensation Alignment",
+                            situation: "A company discovers a major internal salary gap where two senior specialists performing at identical levels have highly mismatched base salaries due to different legacy hiring rates (Rs. 210,000 vs Rs. 260,000 per month).",
+                            solution: "Using market benchmarking data, HR targets the lower-paid manager's Compa-Ratio (0.84), implementing an immediate out-of-cycle salary increase via the Merit Matrix to achieve internal equity."
+                        },
+                        {
+                            id: "C",
+                            tag: "Intrinsic Rewards Design",
+                            situation: "A regional hospital network in Kandy with strict budget limitations must find a way to retain its specialized core nursing staff without raising base salary rates.",
+                            solution: "HR introduces highly flexible self-scheduling frameworks (Autonomy) and fully covers advanced specialized training courses (Mastery), establishing an effective defensive retention program at minimal cash cost."
+                        }
+                    ]
+                },
+                diag: {
+                    title: "Diagnostic Compensation Lab",
+                    intro: "Test key mathematical formulas live using dynamic sliders and pre-loaded student scenarios.",
+                    calc1Title: "1. The Compa-Ratio Calculator",
+                    calc1Formula: "Formula: Employee Monthly Salary / Grade Market Midpoint",
+                    salaryLabel: "Employee Monthly Salary (Rs.):",
+                    midLabel: "Grade Market Midpoint (Rs.):",
+                    resultLabel: "Calculated Compa-Ratio:",
+                    states: {
+                        low: "Low Compa-Ratio (<0.85). Typically indicates a newly promoted individual or a developing performer. Immediate adjustment is recommended if they are rated outstanding to avoid critical talent flight.",
+                        mid: "Healthy Target Midpoint (0.85 - 1.15). Represents an experienced, highly competent professional paid accurately aligned with the market rate.",
+                        high: "High Compa-Ratio (>1.15). Reserved for elite subject matter experts or high performers with extremely deep organizational longevity."
+                    },
+                    calc2Title: "2. Merit Increase Matrix Allocation",
+                    calc2Intro: "Directly synchronized with Calculator 1. Select the Performance Level below to dynamically look up the appropriate percentage raise.",
+                    ratingLabel: "Performance Rating Level:",
+                    rating5: "5 - Outstanding Performance",
+                    rating3: "3 - Fully Competent Performance",
+                    rating1: "1 - Unsatisfactory Performance",
+                    bandLabel: "Compensation Band (Derived from Compa-Ratio):",
+                    bandLow: "Lower Band (Ratio < 0.85)",
+                    bandMid: "Midpoint Band (Ratio 0.85 - 1.15)",
+                    bandHigh: "Upper Band (Ratio > 1.15)",
+                    meritResult: "Recommended Base Salary Increase:",
+                    meritReason: "Note: Lower-range salaries with high performance scores receive the largest increase percentage to safely reduce pay disparity and fix internal salary compression.",
+                    presetsTitle: "Student Testing Scenarios",
+                    presetsSubtitle: "Click any scenario button below to load pre-configured parameters and see instant calculations:",
+                    preset1Btn: "Scenario 1: Underpaid Colombo Tech Star",
+                    preset1Desc: "Salary: Rs. 150,000 | Midpoint: Rs. 200,000 | Rating: 5. Underpaid, outstanding contributor. Needs critical pay correction.",
+                    preset2Btn: "Scenario 2: Highly Paid Underperformer",
+                    preset2Desc: "Salary: Rs. 280,000 | Midpoint: Rs. 200,000 | Rating: 1. Overpaid, poor performer. Recommended salary increase is zeroed.",
+                    preset3Btn: "Scenario 3: Stable Midpoint Professional",
+                    preset3Desc: "Salary: Rs. 200,000 | Midpoint: Rs. 200,000 | Rating: 3. Well-aligned contributor receiving a standard market adjustment."
+                },
+                sim1: {
+                    title: "System Simulation 1: Interactive Architecture Demo",
+                    intro: "Simulate a live transition between opposing performance management systems to see how the company tree and nodes adapt.",
+                    traditionalBtn: "Traditional System",
+                    modernBtn: "Modern Continuous System",
+                    statusLoading: "Re-routing system parameters...",
+                    structureTitle: "Simulated Organizational Grid Map",
+                    impactTitle: "Simulated Cultural Ecosystem Impact",
+                    traditionalTraits: [
+                        "Rigid annual rankings generate intense employee conflict.",
+                        "Recency bias overlooks critical achievements from early quarters.",
+                        "High employee exit warning flags on 40% of standard roles."
+                    ],
+                    modernTraits: [
+                        "Frequent bi-weekly check-ins maintain high target alignment.",
+                        "Continuous development reduces performance evaluation anxiety.",
+                        "Active retention paths safely secure elite operational talent."
+                    ]
+                },
+                sim2: {
+                    title: "System Simulation 2: The Cascade Visualizer",
+                    intro: "Establish a direct line of sight. Click a node to observe how high-level strategic decisions translate into operational goals.",
+                    corp: "Tier 1: Corporate Strategy",
+                    corpDesc: "Increase nationwide market share by 15% through robust infrastructure expansions.",
+                    dept: "Tier 2: Department Objective",
+                    deptDesc: "The Sales department increases qualified sales opportunities by 20% by targeting high-value enterprise accounts.",
+                    indiv: "Tier 3: Individual KPI",
+                    indivDesc: "An individual Account Manager secures exactly 5 new major corporate enterprise agreements per fiscal quarter.",
+                    tip: "Interactive Tip: Aligning these metrics ensures every employee understands their contribution to overall success."
+                },
+                sim3: {
+                    title: "System Simulation 3: Workflow Loop Comparison",
+                    intro: "Switch the workflow setting to contrast linear step-by-step evaluation structures against collaborative loops.",
+                    linearBtn: "Linear Process Map",
+                    loopBtn: "Circular Process Map",
+                    linearSteps: [
+                        "Establish annual performance goals in January.",
+                        "No ongoing managers coaching during the year.",
+                        "High-stakes judgment evaluation in December."
+                    ],
+                    loopSteps: [
+                        "Continuous goal cascading.",
+                        "Bi-weekly performance discussions.",
+                        "Real-time feedback adjustments.",
+                        "Integrated agile development loops."
+                    ],
+                    linearCritique: "Critique: Creates communication gaps, raises year-end appraisal anxiety, and fails to handle volatile market shifts.",
+                    loopCritique: "Benefit: Eliminates year-end review surprises, aligns employee output, and drives ongoing professional growth."
+                },
+                breakout: {
+                    title: "Breakout Room Discussion Prompts",
+                    intro: "Use these provocative questions to kickstart collaborative student discussions in breakout rooms.",
+                    prompts: [
+                        "How does a tenure-based basic salary structure conflict with a high-stakes forced-ranking performance appraisal system?",
+                        "What psychological and behavioral issues occur inside teams when an organization makes its entire salary structure transparent?",
+                        "How can a manager behaviorally differentiate an employee facing a lack of skill from one facing a lack of motivation?",
+                        "Under what specific economic or industry conditions is adopting a 'Lag' compensation posture a logical option?",
+                        "In what ways does the Situation-Behavior-Impact (SBI) model help managers conduct difficult, objective performance reviews?"
+                    ]
+                }
+            },
+            si: {
+                campus: "OBISL කැම්පස්",
+                practicum: "ප්‍රායෝගික සැසිය",
+                subtitle: "මොඩියුලය 7: කාර්යසාධන සහ වැටුප් ව්‍යුහය",
+                liveStatus: "සක්‍රීයයි • සිංහල",
+                exportBtn: "මුද්‍රණය කරන්න",
+                nav: {
+                    case: "සිද්ධි අධ්‍යයනය",
+                    deep: "ප්‍රධාන සිද්ධාන්ත",
+                    scenarios: "ප්‍රායෝගික තත්ත්වයන්",
+                    diagnostic: "ගණනය කිරීමේ විද්‍යාගාරය",
+                    sim1: "ව්‍යුහ ආකෘතිය",
+                    sim2: "අනුක්‍රමික ප්‍රවාහය",
+                    sim3: "වැඩ ප්‍රවාහ වටයන්",
+                    breakout: "කණ්ඩායම් සාකච්ඡා"
+                },
+                case: {
+                    title: "සිද්ධි විශ්ලේෂණය: වැන්ගාර්ඩ් තාක්ෂණික සමාගම",
+                    intro: "ආයතනික අර්බුදයක සිට ඉහළ වර්ධනයක් කරා ළඟා වූ සාර්ථක කාර්යසාධන හැරවුමක් පිළිබඳ විශ්ලේෂණය.",
+                    probTitle: "ප්‍රධාන ක්‍රමවේද ගැටළුව",
+                    probDesc: "පැරණි, බලහත්කාරයෙන් වර්ගීකරණය කිරීමේ ක්‍රමවේදය සහ සීමිත වැටුප් වර්ධක නිසා සේවක කලකිරීම, 40% ක සේවකයින් ඉවත්වීමේ අවදානම සහ දක්ෂ සේවකයින්ට වඩා නවකයන්ට අඩු වැටුප් ලැබීමේ විෂමතාවයන් ඇති විය.",
+                    approachTitle: "ක්‍රමෝපායික ප්‍රවේශය",
+                    approachDesc: "බලහත්කාරයෙන් වර්ගීකරණය කිරීමේ ක්‍රමය අහෝසි කර, අඛණ්ඩ ප්‍රතිපෝෂණ වට, ද්විත්ව MBO ඉලක්ක සහ වෙළඳපල අගයන්ට ගැළපෙන පරිදි වැටුප් සකස් කිරීම සඳහා සංසන්දනාත්මක අනුපාත (Compa-Ratio) භාවිත කරන ලදී.",
+                    resultTitle: "ලැබුණු ප්‍රගතිශීලී ප්‍රතිඵල",
+                    resultDesc: "ඉහළ දක්ෂතා සහිත සේවකයින් ස්වේච්ඡාවෙන් ඉවත්වීම 18% සිට 4% දක්වා අඩු වූ අතර, ඉලක්ක පිළිබඳ පැහැදිලිභාවය 31% සිට 85% දක්වා ඉහළ ගියේය. එමෙන්ම වාර්ෂික ආදායම 11% කින් වර්ධනය විය."
+                },
+                deep: {
+                    title: "න්‍යායාත්මක මූලධර්ම සහ ගැටුම්",
+                    intro: "මානව සම්පත් කළමනාකරණයේ ඇති මූලික ගැටලු මෙහිදී සාකච්ඡා කෙරේ. ඕනෑම කාඩ්පතක් තෝරා එහි අභියෝග විශ්ලේෂණය කරන්න.",
+                    cards: [
+                        {
+                            label: "කාර්යසාධන ඇගයීම",
+                            title: "වාර්ෂික ඇගයීම සහ අඛණ්ඩ ප්‍රතිපෝෂණය",
+                            desc: "පසුගිය සිදුවීම් පමණක් ඇගයීමෙන් සාධාරණ තීරණ ගැනීම අපහසු වේ. එය අඛණ්ඩ ප්‍රතිපෝෂණ ක්‍රමවේදයකට පරිවර්තනය කිරීමෙන්, කළමනාකරු විනිශ්චයකරුවෙකුගේ සිට සැබෑ පුහුණුකරුවෙකු බවට පත්වේ."
+                        },
+                        {
+                            label: "උපායමාර්ගික මැනීම",
+                            title: "MBO ක්‍රමවේදය සහ පටු ඉලක්කකරණය",
+                            desc: "අරමුණු මත පදනම් වූ කළමනාකරණය (MBO) මඟින් නිශ්චිත ප්‍රතිඵල ලබා දෙන නමුත් ගුණාත්මක දායකත්වයන්, සාමූහික හැසිරීම් සහ ආයතනික සංස්කෘතිය මින් නොසලකා හැරීමට ඉඩ ඇත."
+                        },
+                        {
+                            label: "ප්‍රතිලාභ සැලසුම් කිරීම",
+                            title: "ස්ථාවර වැටුප් සහ සමස්ත ප්‍රතිලාභ උපායමාර්ගය",
+                            desc: "ස්ථාවර වැටුපක් මඟින් සේවක අතෘප්තිය වැළැක්විය හැකි වුවත් උපරිම දක්ෂතාවය දිරිමත් කළ නොහැක. මේ සඳහා ස්ථාවර, විචල්‍ය සහ මූල්‍ය නොවන (ස්වාධීනත්වය, ප්‍රවීණත්වය, අරමුණ) ප්‍රතිලාභ නිවැරදිව මිශ්‍ර කළ යුතුය."
+                        }
+                    ]
+                },
+                scenarios: {
+                    title: "ප්‍රායෝගික ව්‍යාපාරික තත්ත්වයන්",
+                    intro: "පාඩම් සටහන් මත පදනම් වූ ශ්‍රී ලාංකීය ව්‍යාපාරික අභියෝග විශ්ලේෂණය කර ඒවාට සුදුසු විසඳුම් තෝරන්න.",
+                    scenarios: [
+                        {
+                            id: "A",
+                            tag: "සේවකයන් රඳවා ගැනීම සහ ප්‍රතිපෝෂණ",
+                            situation: "වාර්ෂික ඇගයීම් ලකුණු නිකුත් කිරීමෙන් පසු කොළඹ පිහිටි මෘදුකාංග සමාගමක සේවකයින් ඉවත්වීමේ අනුපාතය 22% කින් ඉහළ ගියේය.",
+                            solution: "ආයතනය විසින් සති දෙකකට වරක් පවත්වන SBI (Situation-Behavior-Impact) ප්‍රතිපෝෂණ සාකච්ඡා හඳුන්වා දෙන ලදී. එමඟින් සේවකයන් ඉවත්වීම 9% දක්වා අඩු විය."
+                        },
+                        {
+                            id: "B",
+                            tag: "වැටුප් විෂමතා සමනය කිරීම",
+                            situation: "එකම මට්ටමක දක්ෂතා ඇති ජ්‍යෙෂ්ඨ කළමනාකරුවන් දෙදෙනෙකු අතර බඳවාගැනීම් හේතුවෙන් මසකට රු. 50,000 ක වැටුප් පරතරයක් තිබුණි (රු. 210,000 සහ රු. 260,000).",
+                            solution: "මානව සම්පත් අංශය විසින් අඩු වැටුප් ලබන කළමනාකරුගේ සංසන්දනාත්මක අනුපාතය (0.84) හඳුනාගෙන, සාධාරණත්වය ඇති කිරීම සඳහා කුසලතා අනුකෘතිය (Merit Matrix) අනුව වැටුප් සංශෝධනයක් සිදු කරන ලදී."
+                        },
+                        {
+                            id: "C",
+                            tag: "මූල්‍ය නොවන ප්‍රතිලාභ",
+                            situation: "අයවැය සීමිත මහනුවර ප්‍රදේශයේ පෞද්ගලික රෝහලකට, සිය පළපුරුදු හෙද කාර්ය මණ්ඩලය රඳවා ගැනීමට අවශ්‍ය වුවද වැටුප් වැඩි කිරීමට මූල්‍ය ශක්තියක් නොතිබුණි.",
+                            solution: "කාලසටහන් සැකසීමේ නිදහස (Autonomy) සහ උසස් පුහුණු පාඨමාලා නොමිලේ ලබා දීම (Mastery) මඟින් මූල්‍ය පිරිවැයකින් තොරව සේවකයින් සාර්ථකව රඳවා ගන්නා ලදී."
+                        }
+                    ]
+                },
+                diag: {
+                    title: "වැටුප් විශ්ලේෂණ විද්‍යාගාරය",
+                    intro: "පහත දැක්වෙන මෙවලම් සහ පූර්ව-පූරණය කරන ලද අවස්ථා භාවිතයෙන් වැටුප් සූත්‍ර සහ අනුපාතයන් සජීවීව පරීක්ෂා කරන්න.",
+                    calc1Title: "1. සංසන්දනාත්මක අනුපාත (Compa-Ratio) ගණකය",
+                    calc1Formula: "සූත්‍රය: සැබෑ වැටුප / වෙළඳපල මධ්‍යස්ථ අගය",
+                    salaryLabel: "සේවකයාගේ මාසික වැටුප (රු.):",
+                    midLabel: "වෙළඳපල මධ්‍යස්ථ වැටුප (රු.):",
+                    resultLabel: "ගණනය කළ සංසන්දනාත්මක අනුපාතය:",
+                    states: {
+                        low: "අඩු සංසන්දනාත්මක අනුපාතයක් (<0.85). අලුතින් උසස්වීම් ලැබූ හෝ පුහුණුවන සේවකයින් මෙයට අයත් වේ. සේවකයා ඉවත්වීම වැළැක්වීමට වහාම වැටුප් වැඩි කිරීම නිර්දේශ කෙරේ.",
+                        mid: "නිවැරදි වෙළඳපල අනුපාතය (0.85 - 1.15). වෙළඳපල මට්ටමට සරිලන පරිදි නිවැරදිව වැටුප් ලබන දක්ෂ සේවකයින් මින් නිරූපණය වේ.",
+                        high: "ඉහළ සංසන්දනාත්මක අනුපාතයක් (>1.15). ආයතනයේ ඉතා දිගු කාලයක් සේවය කළ විශේෂඥයින් හෝ සුවිශේෂී දක්ෂතා ඇති සේවකයින් සඳහා පමණක් මෙය වෙන් කෙරේ."
+                    },
+                    calc2Title: "2. කුසලතා වැටුප් වර්ධක අනුකෘතිය (Merit Matrix)",
+                    calc2Intro: "මෙය පළමු ගණක යන්ත්‍රය හා සෘජුවම සම්බන්ධ වේ. අනුරූප වැටුප් වර්ධක ප්‍රතිශතය බැලීමට පහතින් කාර්යසාධන මට්ටම තෝරන්න.",
+                    ratingLabel: "කාර්යසාධන මට්ටම:",
+                    rating5: "5 - සුවිශේෂී දක්ෂතා පෙන්වූ (Outstanding)",
+                    rating3: "3 - සතුටුදායක දක්ෂතා පෙන්වූ (Fully Competent)",
+                    rating1: "1 - දුර්වල කාර්යසාධනයක් පෙන්වූ (Unsatisfactory)",
+                    bandLabel: "වැටුප් මට්ටම (සංසන්දනාත්මක අනුපාතය මත පදනම්ව):",
+                    bandLow: "අඩු වැටුප් මට්ටම (අනුපාතය < 0.85)",
+                    bandMid: "මධ්‍යස්ථ වැටුප් මට්ටම (අනුපාතය 0.85 - 1.15)",
+                    bandHigh: "ඉහළ වැටුප් මට්ටම (අනුපාතය > 1.15)",
+                    meritResult: "නිර්දේශිත වැටුප් වර්ධක ප්‍රතිශතය:",
+                    meritReason: "සටහන: අවම වැටුප් මට්ටමේ සිටින උපරිම දක්ෂතා පෙන්වන සේවකයින්ට වැඩිම ප්‍රතිශතයක් හිමි වන අතර, එමඟින් වැටුප් පරතරයන් වේගයෙන් අවම වේ.",
+                    presetsTitle: "ක්‍ෂණික පරීක්ෂණ අවස්ථා",
+                    presetsSubtitle: "පරාමිතීන් ඇතුළත් කර ගණනය කිරීම් සජීවීව බැලීමට පහත ඕනෑම බොත්තමක් ක්ලික් කරන්න:",
+                    preset1Btn: "තත්ත්වය 1: අඩු වැටුප් ලබන දක්ෂයා (කොළඹ)",
+                    preset1Desc: "වැටුප: රු. 150,000 | මධ්‍යස්ථය: රු. 200,000 | ඇගයීම: 5. සුවිශේෂී දක්ෂතා ඇති සේවකයාට වැටුප් විෂමතාවය නිවැරදි කිරීම සඳහා උපරිම වර්ධකයක් හිමිවේ.",
+                    preset2Btn: "තත්ත්වය 2: වැඩි වැටුප් ලබන දුර්වල සේවකයා",
+                    preset2Desc: "වැටුප: රු. 280,000 | මධ්‍යස්ථය: රු. 200,000 | ඇගයීම: 1. වෙළඳපල මට්ටමට වඩා වැටුප් ලබන නමුත් දුර්වල කාර්යසාධනයක් පෙන්වයි. වර්ධකය 0% කි.",
+                    preset3Btn: "තත්ත්වය 3: සාමාන්‍ය මට්ටමේ දක්ෂ සේවකයා",
+                    preset3Desc: "වැටුප: රු. 200,000 | මධ්‍යස්ථය: රු. 200,000 | ඇගයීම: 3. වෙළඳපල අගයට සමානව වැටුප් ලබමින් සතුටුදායක දක්ෂතා පෙන්වයි. සාමාන්‍ය වර්ධකයක් හිමිවේ."
+                },
+                sim1: {
+                    title: "ව්‍යුහ ආකෘතිය: අන්තර්ක්‍රියාකාරී පද්ධති නිරූපණය",
+                    intro: "කාර්යසාධන කළමනාකරණ ක්‍රමවේද වෙනස් කිරීමේදී ආයතනික සේවක ජාලය හැසිරෙන ආකාරය මෙහිදී සජීවීව පරීක්ෂා කළ හැක.",
+                    traditionalBtn: "පැරණි සාම්ප්‍රදායික ක්‍රමය",
+                    modernBtn: "නවීන අඛණ්ඩ ක්‍රමය",
+                    statusLoading: "පද්ධති පරාමිතීන් යාවත්කාලීන වෙමින් පවතී...",
+                    structureTitle: "ආයතනික සේවක ජාල සිතියම",
+                    impactTitle: "සංස්කෘතික පරිසරයට ඇති වන බලපෑම",
+                    traditionalTraits: [
+                        "වාර්ෂික වර්ගීකරණයන් නිසා සේවකයන් අතර දැඩි තරඟයක් සහ කලකිරීම් ඇති වේ.",
+                        "ආසන්න සිදුවීම්වලට පමණක් ප්‍රමුඛතාවය දීම නිසා වසරේ මුල් භාගයේ දක්ෂතා මඟහැරේ.",
+                        "40% ක් පමණ සේවකයින් ඉවත්වීමේ දැඩි අවදානමක පසුවේ."
+                    ],
+                    modernTraits: [
+                        "සති දෙකකට වරක් සිදු කරන සාකච්ඡා නිසා ඉලක්ක නිවැරදිව පවත්වාගත හැක.",
+                        "අඛණ්ඩ සංවර්ධන වැඩසටහන් නිසා සේවකයින්ගේ ඇගයීම් බිය දුරු වේ.",
+                        "දක්ෂ සේවකයින් ආයතනය තුළ සුරක්ෂිතව රඳවා තබාගත හැක."
+                    ]
+                },
+                sim2: {
+                    title: "අනුක්‍රමික ප්‍රවාහය: Cascading Visualizer",
+                    intro: "ප්‍රධාන ආයතනික තීරණ දෙපාර්තමේන්තු හරහා පහළ මට්ටමේ සේවකයාගේ දෛනික ඉලක්ක වෙත ගලා යන ආකාරය සසඳන්න.",
+                    corp: "පියවර 1: ආයතනික උපායමාර්ගය",
+                    corpDesc: "දිවයින පුරා පාරිභෝගික සේවය පුළුල් කරමින් වෙළඳපල කොටස 15% කින් ඉහළ නැංවීම.",
+                    dept: "පියවර 2: දෙපාර්තමේන්තු ඉලක්කය",
+                    deptDesc: "විශාල ආයතනික ගනුදෙනුකරුවන් ඉලක්ක කර ගනිමින් විකුණුම් අවස්ථා 20% කින් වැඩි කිරීම.",
+                    indiv: "පියවර 3: පුද්ගලික දර්ශක (KPI)",
+                    indivDesc: "එක් එක් විකුණුම් නිලධාරියා විසින් එක් කාර්තුවකට අවම වශයෙන් නව ආයතනික ගිණුම් 5 බැගින් ලබා ගැනීම.",
+                    tip: "ප්‍රායෝගික උපදෙස: මෙම සම්බන්ධතාවය පැහැදිලිව පැවතීමෙන් සේවකයා තම දෛනික දායකත්වයේ වටිනාකම හොඳින් වටහා ගනී."
+                },
+                sim3: {
+                    title: "වැඩ ප්‍රවාහ වටයන්: ක්‍රමවේද දෙකක සැසඳීම",
+                    intro: "සාම්ප්‍රදායික රේඛීය ඇගයීම් ක්‍රියාවලිය සහ නම්‍යශීලී වටකුරු අඛණ්ඩ ක්‍රියාවලිය අතර වෙනස සසඳන්න.",
+                    linearBtn: "රේඛීය ක්‍රියාවලි සිතියම",
+                    loopBtn: "වටකුරු ක්‍රියාවලි සිතියම",
+                    linearSteps: [
+                        "ජනවාරි මාසයේදී වාර්ෂික ඉලක්ක සැකසීම.",
+                        "වසර පුරා කළමනාකරුවන්ගෙන් කිසිදු මගපෙන්වීමක් නොලැබීම.",
+                        "දෙසැම්බර් මාසයේදී අවසන් විනිශ්චය ඇගයීම."
+                    ],
+                    loopSteps: [
+                        "අඛණ්ඩව ඉලක්ක පැහැදීම.",
+                        "සති දෙකකට වරක් ප්‍රගතිය සාකච්ඡා කිරීම.",
+                        "එසැණින් වැරදි නිවැරදි කරගැනීම.",
+                        "නම්‍යශීලී සංවර්ධන වටයන් ක්‍රියාත්මක කිරීම."
+                    ],
+                    linearCritique: "විවේචනය: සන්නිවේදන හිඩැස් ඇති කරයි, වසර අවසානයේ සේවක ආතතිය වැඩි කරයි, වෙනස් වන වෙළඳපලට නොගැලපේ.",
+                    loopCritique: "වාසිය: පුදුමයට පත්වීම් වළක්වයි, සේවක දායකත්වය නිරන්තරයෙන් ඉහළ නංවයි, අඛණ්ඩ වෘත්තීය වර්ධනයක් ඇති කරයි."
+                },
+                breakout: {
+                    title: "කණ්ඩායම් සාකච්ඡා සඳහා ප්‍රශ්න මාලාව",
+                    intro: "ප්‍රායෝගික සැසියේදී සිසුන් අතර සාකච්ඡා ඇති කිරීම සඳහා පහත දැක්වෙන ප්‍රශ්න භාවිත කරන්න.",
+                    prompts: [
+                        "සේවා කාලය මත පමණක් වැටුප් ගෙවීම, බලහත්කාරයෙන් වර්ගීකරණය කිරීමේ ඇගයීම් ක්‍රමයක අසාර්ථකත්වයට හේතු වන්නේ කෙසේද?",
+                        "ආයතනයක සමස්ත වැටුප් ව්‍යුහය ප්‍රසිද්ධ කළහොත් සේවකයින් අතර ඇති විය හැකි මානසික සහ සන්නිවේදන අභියෝග මොනවාද?",
+                        "සේවකයෙකුගේ කුසලතා නොමැතිකම (Lack of Skill) සහ අභිප්‍රේරණය නොමැතිකම (Lack of Motivation) කළමනාකරුවෙකු වෙන්කර හඳුනා ගන්නේ කෙසේද?",
+                        "වෙළඳපල මට්ටමට වඩා අඩු වැටුප් ගෙවීමේ උපායමාර්ගයක් ('Lag' Posture) වඩාත් උචිත වන්නේ කුමන ආර්ථික තත්ත්වයන් යටතේද?",
+                        "වඩාත් සාධාරණ සහ වෛෂයික ඇගයීමක් පැවැත්වීමට SBI (Situation-Behavior-Impact) ආකෘතිය උපකාරී වන්නේ කෙසේද?"
+                    ]
+                }
+            }
+        };
+
+        // --- MAIN APP COMPONENT ---
+        function App() {
+            const [language, setLanguage] = React.useState('en'); // 'en' or 'si'
+            const [activeTab, setActiveTab] = React.useState('case');
+
+            // Interactive Compensation States
+            const [activeDeepCard, setActiveDeepCard] = React.useState(0);
+            const [salary, setSalary] = React.useState(180000); // Standard starting Lankan professional salary
+            const [midpoint, setMidpoint] = React.useState(200000); // Lankan GRADE midpoint
+            const [perfRating, setPerfRating] = React.useState('3');
+            
+            // Simulation States
+            const [frameworkState, setFrameworkState] = React.useState('modern');
+            const [isSimLoading, setIsSimLoading] = React.useState(false);
+            const [cascadeTier, setCascadeTier] = React.useState('corp');
+            const [workflowStyle, setWorkflowStyle] = React.useState('circular');
+
+            const activeTrans = translations[language];
+
+            // Simulation framework switcher
+            const triggerFrameworkChange = (target) => {
+                setIsSimLoading(true);
+                setTimeout(() => {
+                    setFrameworkState(target);
+                    setIsSimLoading(false);
+                }, 500);
+            };
+
+            // Calculated Compa Ratio Logic
+            const compaRatio = (salary / midpoint).toFixed(2);
+            let compaStatus = "mid";
+            let compaColor = "text-brand-500 border-brand-500/30";
+            
+            if (compaRatio < 0.85) {
+                compaStatus = "low";
+                compaColor = "text-yellow-400 border-yellow-500/30";
+            } else if (compaRatio > 1.15) {
+                compaStatus = "high";
+                compaColor = "text-tech-400 border-tech-500/30";
+            }
+
+            // DYNAMIC LINKAGE: Automatically resolve Compa-Ratio Band for Matrix Lookup
+            const derivedCompaBand = compaRatio < 0.85 ? 'low' : (compaRatio > 1.15 ? 'high' : 'mid');
+
+            // Merit Matrix Calculator Logic
+            const calcMeritPercentage = () => {
+                if (perfRating === '5') {
+                    if (derivedCompaBand === 'low') return '8% - 10%';
+                    if (derivedCompaBand === 'mid') return '6% - 7%';
+                    return '4% - 5%';
+                }
+                if (perfRating === '3') {
+                    if (derivedCompaBand === 'low') return '5% - 6%';
+                    if (derivedCompaBand === 'mid') return '3% - 4%';
+                    return '1% - 2%';
+                }
+                return '0%';
+            };
+
+            // Preset Injector for Student Testing
+            const injectPreset = (sal, mid, perf) => {
+                setSalary(sal);
+                setMidpoint(mid);
+                setPerfRating(perf);
+            };
+
+            return (
+                <div className="flex min-h-screen text-slate-100 selection:bg-brand-500 selection:text-white">
+                    
+                    {/* FIXED SIDEBAR NAVIGATION */}
+                    <aside className="w-72 border-r border-slate-900 bg-slate-950/90 p-5 flex flex-col justify-between fixed h-full z-30 no-print no-scrollbar overflow-y-auto">
+                        <div>
+                            <div className="mb-8 px-2">
+                                <h1 className="text-xs font-bold uppercase tracking-widest text-brand-500">{activeTrans.campus}</h1>
+                                <p className="text-lg font-extrabold text-white tracking-tight leading-tight">{activeTrans.practicum}</p>
+                            </div>
+                            
+                            <nav className="space-y-1.5">
+                                <button onClick={() => setActiveTab('case')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${activeTab === 'case' ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/10' : 'text-slate-400 hover:bg-slate-900 hover:text-white'}`}>
+                                    <IconCase />
+                                    <span>{activeTrans.nav.case}</span>
+                                </button>
+                                <button onClick={() => setActiveTab('deep')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${activeTab === 'deep' ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/10' : 'text-slate-400 hover:bg-slate-900 hover:text-white'}`}>
+                                    <IconAnalysis />
+                                    <span>{activeTrans.nav.deep}</span>
+                                </button>
+                                <button onClick={() => setActiveTab('scenarios')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${activeTab === 'scenarios' ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/10' : 'text-slate-400 hover:bg-slate-900 hover:text-white'}`}>
+                                    <IconScenario />
+                                    <span>{activeTrans.nav.scenarios}</span>
+                                </button>
+                                <button onClick={() => setActiveTab('diagnostic')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${activeTab === 'diagnostic' ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/10' : 'text-slate-400 hover:bg-slate-900 hover:text-white'}`}>
+                                    <IconCalculator />
+                                    <span>{activeTrans.nav.diagnostic}</span>
+                                </button>
+                                <button onClick={() => setActiveTab('sim1')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${activeTab === 'sim1' ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/10' : 'text-slate-400 hover:bg-slate-900 hover:text-white'}`}>
+                                    <IconSim1 />
+                                    <span>{activeTrans.nav.sim1}</span>
+                                </button>
+                                <button onClick={() => setActiveTab('sim2')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${activeTab === 'sim2' ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/10' : 'text-slate-400 hover:bg-slate-900 hover:text-white'}`}>
+                                    <IconSim2 />
+                                    <span>{activeTrans.nav.sim2}</span>
+                                </button>
+                                <button onClick={() => setActiveTab('sim3')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${activeTab === 'sim3' ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/10' : 'text-slate-400 hover:bg-slate-900 hover:text-white'}`}>
+                                    <IconSim3 />
+                                    <span>{activeTrans.nav.sim3}</span>
+                                </button>
+                                <button onClick={() => setActiveTab('breakout')} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${activeTab === 'breakout' ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/10' : 'text-slate-400 hover:bg-slate-900 hover:text-white'}`}>
+                                    <IconDiscuss />
+                                    <span>{activeTrans.nav.breakout}</span>
+                                </button>
+                            </nav>
+                        </div>
+
+                        <div>
+                            <hr className="border-slate-900 mb-4" />
+                            <button onClick={() => window.print()} className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-slate-200 text-xs font-semibold rounded-lg tracking-wide uppercase transition-all">
+                                <IconPrint />
+                                <span>{activeTrans.exportBtn}</span>
+                            </button>
+                        </div>
+                    </aside>
+
+                    {/* MAIN WORKSPACE */}
+                    <main className="flex-1 pl-72 min-h-screen flex flex-col">
+                        
+                        {/* CONSOLE TOP BAR WITH EXCLUSIVE PURE LANGUAGE SWITCHERS */}
+                        <header className="sticky top-0 z-20 bg-slate-950/80 backdrop-blur-md border-b border-slate-900 px-8 py-4 flex items-center justify-between no-print">
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <span className="w-2.5 h-2.5 rounded-full bg-brand-500 animate-pulse"></span>
+                                    <p className="text-xs font-bold tracking-widest text-slate-400 uppercase">{activeTrans.campus}</p>
+                                </div>
+                                <h2 className="text-sm font-semibold text-slate-200">{activeTrans.subtitle}</h2>
+                            </div>
+
+                            {/* Dual Pure Language Switcher Toggle Buttons */}
+                            <div className="flex bg-slate-900 border border-slate-800 rounded-lg p-1 text-xs font-medium">
+                                <button onClick={() => setLanguage('en')} className={`px-4 py-1.5 rounded-md transition-all ${language === 'en' ? 'bg-brand-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}>
+                                    English Mode
+                                </button>
+                                <button onClick={() => setLanguage('si')} className={`px-4 py-1.5 rounded-md transition-all font-sinhala ${language === 'si' ? 'bg-brand-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'}`}>
+                                    සිංහල මාදිලිය
+                                </button>
+                            </div>
+                        </header>
+
+                        {/* DISPLAY CORE AREA */}
+                        <div className="flex-1 p-8 print-container">
+                            
+                            {/* TAB 1: CASE STUDY */}
+                            {activeTab === 'case' && (
+                                <div className="space-y-6 animate-fadeIn">
+                                    <div className="border-b border-slate-900 pb-4">
+                                        <h3 className="text-2xl font-black tracking-tight text-white">{activeTrans.case.title}</h3>
+                                        <p className="text-slate-400 text-sm mt-1">{activeTrans.case.intro}</p>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        {/* Problem */}
+                                        <div className="glass-panel p-6 rounded-xl border-l-4 border-red-500 shadow-xl transition-all hover:translate-y-[-2px]">
+                                            <span className="text-xs font-mono text-red-400 uppercase tracking-wider block mb-2">01 / Challenge</span>
+                                            <h4 className="text-lg font-bold text-slate-100 mb-2">{activeTrans.case.probTitle}</h4>
+                                            <p className="text-sm text-slate-400 leading-relaxed">{activeTrans.case.probDesc}</p>
+                                        </div>
+
+                                        {/* Approach */}
+                                        <div className="glass-panel p-6 rounded-xl border-l-4 border-yellow-500 shadow-xl transition-all hover:translate-y-[-2px]">
+                                            <span className="text-xs font-mono text-yellow-400 uppercase tracking-wider block mb-2">02 / Transformation</span>
+                                            <h4 className="text-lg font-bold text-slate-100 mb-2">{activeTrans.case.approachTitle}</h4>
+                                            <p className="text-sm text-slate-400 leading-relaxed">{activeTrans.case.approachDesc}</p>
+                                        </div>
+
+                                        {/* Metrics */}
+                                        <div className="glass-panel p-6 rounded-xl border-l-4 border-brand-500 shadow-xl transition-all hover:translate-y-[-2px]">
+                                            <span className="text-xs font-mono text-brand-400 uppercase tracking-wider block mb-2">03 / Success</span>
+                                            <h4 className="text-lg font-bold text-slate-100 mb-2">{activeTrans.case.resultTitle}</h4>
+                                            <p className="text-sm text-slate-400 leading-relaxed">{activeTrans.case.resultDesc}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB 2: DEEP DIVE ANALYSIS */}
+                            {activeTab === 'deep' && (
+                                <div className="space-y-6">
+                                    <div className="border-b border-slate-900 pb-4">
+                                        <h3 className="text-2xl font-black tracking-tight text-white">{activeTrans.deep.title}</h3>
+                                        <p className="text-slate-400 text-sm mt-1">{activeTrans.deep.intro}</p>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                        {activeTrans.deep.cards.map((card, idx) => (
+                                            <div key={idx} onClick={() => setActiveDeepCard(idx)} className={`p-6 rounded-xl cursor-pointer transition-all border ${activeDeepCard === idx ? 'bg-brand-950/40 border-brand-500 shadow-2xl scale-[1.01]' : 'glass-panel border-slate-800/60 opacity-70 hover:opacity-100'}`}>
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <span className="text-xs font-mono px-2 py-1 bg-slate-900 rounded text-brand-400">{card.label}</span>
+                                                    <span className={`w-2 h-2 rounded-full ${activeDeepCard === idx ? 'bg-brand-500 animate-pulse' : 'bg-slate-700'}`}></span>
+                                                </div>
+                                                <h4 className="text-base font-bold text-slate-100 mb-2">{card.title}</h4>
+                                                <p className="text-xs text-slate-400 leading-relaxed">{card.desc}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB 3: SCENARIO SUITE */}
+                            {activeTab === 'scenarios' && (
+                                <div className="space-y-6">
+                                    <div className="border-b border-slate-900 pb-4">
+                                        <h3 className="text-2xl font-black tracking-tight text-white">{activeTrans.scenarios.title}</h3>
+                                        <p className="text-slate-400 text-sm mt-1">{activeTrans.scenarios.intro}</p>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        {activeTrans.scenarios.scenarios.map((scene) => (
+                                            <div key={scene.id} className="glass-panel p-6 rounded-xl border-l-2 border-brand-500 flex flex-col md:flex-row gap-6">
+                                                <div className="md:w-1/3 shrink-0">
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <span className="text-xs font-mono px-2 py-0.5 bg-brand-950 text-brand-400 rounded font-bold uppercase">{scene.id}</span>
+                                                        <span className="text-xs text-slate-400">{scene.tag}</span>
+                                                    </div>
+                                                    <h4 className="text-sm font-bold text-slate-200">{language === 'en' ? 'Operational Dilemma' : 'ව්‍යාපාරික අභියෝගය'}</h4>
+                                                    <p className="text-xs text-slate-400 mt-2 leading-relaxed">{scene.situation}</p>
+                                                </div>
+                                                <div className="md:w-2/3 bg-slate-950/50 p-4 rounded-lg border border-slate-900 flex flex-col justify-center">
+                                                    <h4 className="text-xs font-mono uppercase text-brand-400 tracking-wider mb-1">{language === 'en' ? 'Calculated Intervention Decision' : 'ක්‍රමෝපායික විසඳුම'}</h4>
+                                                    <p className="text-xs text-slate-300 leading-relaxed">{scene.solution}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB 4: DIAGNOSTIC LAB */}
+                            {activeTab === 'diagnostic' && (
+                                <div className="space-y-6 animate-fadeIn">
+                                    <div className="border-b border-slate-900 pb-4">
+                                        <h3 className="text-2xl font-black tracking-tight text-white">{activeTrans.diag.title}</h3>
+                                        <p className="text-slate-400 text-sm mt-1">{activeTrans.diag.intro}</p>
+                                    </div>
+
+                                    {/* INTERACTIVE TESTING PRESETS PANEL */}
+                                    <div className="glass-panel p-6 rounded-xl border-l-4 border-tech-500 space-y-4">
+                                        <div>
+                                            <h4 className="text-sm font-bold text-slate-100 uppercase tracking-wide flex items-center gap-2">
+                                                <span className="w-2 h-2 rounded-full bg-tech-400 animate-ping"></span>
+                                                {activeTrans.diag.presetsTitle}
+                                            </h4>
+                                            <p className="text-xs text-slate-400 mt-1">{activeTrans.diag.presetsSubtitle}</p>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <button onClick={() => injectPreset(150000, 200000, '5')} className="p-3 bg-slate-900/60 border border-slate-800 hover:border-brand-500 rounded-lg text-left transition-all group">
+                                                <span className="text-xs font-bold text-brand-400 block group-hover:text-brand-300">{activeTrans.diag.preset1Btn}</span>
+                                                <span className="text-[11px] text-slate-500 block mt-1 leading-tight">{activeTrans.diag.preset1Desc}</span>
+                                            </button>
+
+                                            <button onClick={() => injectPreset(280000, 200000, '1')} className="p-3 bg-slate-900/60 border border-slate-800 hover:border-red-500 rounded-lg text-left transition-all group">
+                                                <span className="text-xs font-bold text-red-400 block group-hover:text-red-300">{activeTrans.diag.preset2Btn}</span>
+                                                <span className="text-[11px] text-slate-500 block mt-1 leading-tight">{activeTrans.diag.preset2Desc}</span>
+                                            </button>
+
+                                            <button onClick={() => injectPreset(200000, 200000, '3')} className="p-3 bg-slate-900/60 border border-slate-800 hover:border-tech-500 rounded-lg text-left transition-all group">
+                                                <span className="text-xs font-bold text-tech-400 block group-hover:text-tech-300">{activeTrans.diag.preset3Btn}</span>
+                                                <span className="text-[11px] text-slate-500 block mt-1 leading-tight">{activeTrans.diag.preset3Desc}</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                        
+                                        {/* CALC 1: COMPA RATIO */}
+                                        <div className="glass-panel p-6 rounded-xl space-y-4 flex flex-col justify-between">
+                                            <div>
+                                                <div className="border-b border-slate-900 pb-2 mb-4">
+                                                    <h4 className="text-sm font-bold text-slate-200 uppercase tracking-wide">{activeTrans.diag.calc1Title}</h4>
+                                                    <p className="text-xs text-slate-500 font-mono mt-0.5">{activeTrans.diag.calc1Formula}</p>
+                                                </div>
+
+                                                <div className="space-y-4">
+                                                    <div>
+                                                        <div className="flex justify-between text-xs mb-1">
+                                                            <span>{activeTrans.diag.salaryLabel}</span>
+                                                            <span className="font-mono text-brand-400 font-bold">Rs. {salary.toLocaleString()}</span>
+                                                        </div>
+                                                        <input type="range" min="50000" max="400000" step="5000" value={salary} onChange={(e) => setSalary(Number(e.target.value))} className="w-full h-1 bg-slate-800 rounded appearance-none cursor-pointer accent-brand-500" />
+                                                    </div>
+
+                                                    <div>
+                                                        <div className="flex justify-between text-xs mb-1">
+                                                            <span>{activeTrans.diag.midLabel}</span>
+                                                            <span className="font-mono text-tech-400 font-bold">Rs. {midpoint.toLocaleString()}</span>
+                                                        </div>
+                                                        <input type="range" min="100000" max="300000" step="5000" value={midpoint} onChange={(e) => setMidpoint(Number(e.target.value))} className="w-full h-1 bg-slate-800 rounded appearance-none cursor-pointer accent-tech-500" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="bg-slate-950 p-4 rounded-lg border border-slate-900 flex flex-col md:flex-row items-center gap-4 mt-4">
+                                                <div className="text-center md:text-left shrink-0">
+                                                    <span className="text-xs text-slate-500 block">{activeTrans.diag.resultLabel}</span>
+                                                    <span className={`text-4xl font-black ${compaColor}`}>{compaRatio}</span>
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p className="text-xs text-slate-400 leading-relaxed">{activeTrans.diag.states[compaStatus]}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* CALC 2: MERIT MATRIX */}
+                                        <div className="glass-panel p-6 rounded-xl space-y-4 flex flex-col justify-between">
+                                            <div>
+                                                <div className="border-b border-slate-900 pb-2 mb-4">
+                                                    <h4 className="text-sm font-bold text-slate-200 uppercase tracking-wide">{activeTrans.diag.calc2Title}</h4>
+                                                    <p className="text-xs text-slate-500 mt-0.5">{activeTrans.diag.calc2Intro}</p>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="text-xs text-slate-400 block mb-1.5">{activeTrans.diag.ratingLabel}</label>
+                                                        <select value={perfRating} onChange={(e) => setPerfRating(e.target.value)} className="w-full bg-slate-900 border border-slate-800 text-xs rounded p-2 text-slate-200 focus:outline-none focus:border-brand-500">
+                                                            <option value="5">{activeTrans.diag.rating5}</option>
+                                                            <option value="3">{activeTrans.diag.rating3}</option>
+                                                            <option value="1">{activeTrans.diag.rating1}</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div>
+                                                        <label className="text-xs text-slate-400 block mb-1.5">{activeTrans.diag.bandLabel}</label>
+                                                        <div className="w-full bg-slate-950 border border-slate-900 text-xs rounded p-2 text-slate-300 font-medium">
+                                                            {derivedCompaBand === 'low' && activeTrans.diag.bandLow}
+                                                            {derivedCompaBand === 'mid' && activeTrans.diag.bandMid}
+                                                            {derivedCompaBand === 'high' && activeTrans.diag.bandHigh}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="bg-slate-950 p-4 rounded-lg border border-slate-900 flex flex-col md:flex-row items-center gap-4 mt-4">
+                                                <div className="text-center md:text-left shrink-0">
+                                                    <span className="text-xs text-slate-500 block">{activeTrans.diag.meritResult}</span>
+                                                    <span className="text-4xl font-black text-brand-500">{calcMeritPercentage()}</span>
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p className="text-xs text-slate-400 leading-relaxed">{activeTrans.diag.meritReason}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB 5: SYSTEM SIMULATION 1 */}
+                            {activeTab === 'sim1' && (
+                                <div className="space-y-6 animate-fadeIn">
+                                    <div className="border-b border-slate-900 pb-4">
+                                        <h3 className="text-2xl font-black tracking-tight text-white">{activeTrans.sim1.title}</h3>
+                                        <p className="text-slate-400 text-sm mt-1">{activeTrans.sim1.intro}</p>
+                                    </div>
+
+                                    <div className="flex bg-slate-900/60 border border-slate-800 p-1 rounded-lg max-w-md">
+                                        <button onClick={() => triggerFrameworkChange('traditional')} className={`flex-1 text-xs font-bold uppercase py-2 px-3 rounded ${frameworkState === 'traditional' ? 'bg-red-950/50 text-red-400 border border-red-900/40' : 'text-slate-400'}`}>
+                                            {activeTrans.sim1.traditionalBtn}
+                                        </button>
+                                        <button onClick={() => triggerFrameworkChange('modern')} className={`flex-1 text-xs font-bold uppercase py-2 px-3 rounded ${frameworkState === 'modern' ? 'bg-brand-950/50 text-brand-400 border border-brand-900/40' : 'text-slate-400'}`}>
+                                            {activeTrans.sim1.modernBtn}
+                                        </button>
+                                    </div>
+
+                                    <div className="glass-panel p-6 rounded-xl relative min-h-[18rem] flex flex-col justify-between">
+                                        {isSimLoading && (
+                                            <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm rounded-xl flex items-center justify-center z-10">
+                                                <div className="flex items-center gap-3">
+                                                    <span className="w-4 h-4 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></span>
+                                                    <span className="text-xs tracking-widest uppercase font-mono text-slate-400">{activeTrans.sim1.statusLoading}</span>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                                            
+                                            {/* CSS Structure Map Visualizer */}
+                                            <div className="lg:col-span-7 space-y-4">
+                                                <h4 className="text-xs font-mono uppercase text-slate-400">{activeTrans.sim1.structureTitle}</h4>
+                                                
+                                                {frameworkState === 'traditional' ? (
+                                                    <div className="grid grid-cols-3 gap-3">
+                                                        {[
+                                                            { name: "Unit A", status: "border-red-500 bg-red-950/20 text-red-400" },
+                                                            { name: "Unit B", status: "border-red-500 bg-red-950/20 text-red-400" },
+                                                            { name: "Unit C", status: "border-red-500 bg-red-950/20 text-red-400" },
+                                                            { name: "Silo 1", status: "border-yellow-600 bg-yellow-950/10 text-yellow-500" },
+                                                            { name: "Silo 2", status: "border-yellow-600 bg-yellow-950/10 text-yellow-500" },
+                                                            { name: "Silo 3", status: "border-yellow-600 bg-yellow-950/10 text-yellow-500" }
+                                                        ].map((node, idx) => (
+                                                            <div key={idx} className={`p-3 border rounded text-xs font-mono text-center transition-all ${node.status}`}>
+                                                                🛑 {node.name}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="grid grid-cols-3 gap-3">
+                                                        {[
+                                                            { name: "Team Blue", status: "border-brand-500 bg-brand-950/20 text-brand-400" },
+                                                            { name: "Team Gold", status: "border-brand-500 bg-brand-950/20 text-brand-400" },
+                                                            { name: "Team Red", status: "border-brand-500 bg-brand-950/20 text-brand-400" },
+                                                            { name: "Sync Loop 1", status: "border-tech-500 bg-tech-950/20 text-tech-400" },
+                                                            { name: "Sync Loop 2", status: "border-tech-500 bg-tech-950/20 text-tech-400" },
+                                                            { name: "Sync Loop 3", status: "border-tech-500 bg-tech-950/20 text-tech-400" }
+                                                        ].map((node, idx) => (
+                                                            <div key={idx} className={`p-3 border rounded text-xs font-mono text-center transition-all ${node.status} animate-pulse`}>
+                                                                ⚡ {node.name}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Impact Panel */}
+                                            <div className="lg:col-span-5 space-y-4">
+                                                <h4 className="text-xs font-mono uppercase text-slate-400">{activeTrans.sim1.impactTitle}</h4>
+                                                
+                                                <ul className="space-y-3">
+                                                    {frameworkState === 'traditional' ? (
+                                                        activeTrans.sim1.traditionalTraits.map((trait, i) => (
+                                                            <li key={i} className="text-xs text-slate-400 bg-red-950/10 border border-red-950 p-2.5 rounded flex items-start gap-2">
+                                                                <span className="text-red-500 shrink-0">✕</span>
+                                                                <span>{trait}</span>
+                                                            </li>
+                                                        ))
+                                                    ) : (
+                                                        activeTrans.sim1.modernTraits.map((trait, i) => (
+                                                            <li key={i} className="text-xs text-slate-300 bg-brand-950/10 border border-brand-950/40 p-2.5 rounded flex items-start gap-2">
+                                                                <span className="text-brand-400 shrink-0">✓</span>
+                                                                <span>{trait}</span>
+                                                            </li>
+                                                        ))
+                                                    )}
+                                                </ul>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB 6: SYSTEM SIMULATION 2 */}
+                            {activeTab === 'sim2' && (
+                                <div className="space-y-6">
+                                    <div className="border-b border-slate-900 pb-4">
+                                        <h3 className="text-2xl font-black tracking-tight text-white">{activeTrans.sim2.title}</h3>
+                                        <p className="text-slate-400 text-sm mt-1">{activeTrans.sim2.intro}</p>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div onClick={() => setCascadeTier('corp')} className={`p-4 rounded-xl cursor-pointer border transition-all ${cascadeTier === 'corp' ? 'bg-brand-950/60 border-brand-500 shadow-lg' : 'glass-panel border-slate-800'}`}>
+                                            <span className="text-xs font-mono text-slate-500 uppercase tracking-widest">Tier 1</span>
+                                            <h4 className="text-sm font-bold text-slate-200 mt-1">{language === 'en' ? 'Corporate Level' : 'ආයතනික මට්ටම'}</h4>
+                                        </div>
+                                        <div onClick={() => setCascadeTier('dept')} className={`p-4 rounded-xl cursor-pointer border transition-all ${cascadeTier === 'dept' ? 'bg-tech-950/60 border-tech-500 shadow-lg' : 'glass-panel border-slate-800'}`}>
+                                            <span className="text-xs font-mono text-slate-500 uppercase tracking-widest">Tier 2</span>
+                                            <h4 className="text-sm font-bold text-slate-200 mt-1">{language === 'en' ? 'Departmental Level' : 'දෙපාර්තමේන්තු මට්ටම'}</h4>
+                                        </div>
+                                        <div onClick={() => setCascadeTier('indiv')} className={`p-4 rounded-xl cursor-pointer border transition-all ${cascadeTier === 'indiv' ? 'bg-purple-950/60 border-purple-500 shadow-lg' : 'glass-panel border-slate-800'}`}>
+                                            <span className="text-xs font-mono text-slate-500 uppercase tracking-widest">Tier 3</span>
+                                            <h4 className="text-sm font-bold text-slate-200 mt-1">{language === 'en' ? 'Individual Level' : 'පුද්ගලික මට්ටම'}</h4>
+                                        </div>
+                                    </div>
+
+                                    <div className="glass-panel p-6 rounded-xl space-y-4">
+                                        <div className="space-y-4 relative">
+                                            {/* Tier 1 Node */}
+                                            <div className={`p-4 rounded-lg border text-xs transition-all ${cascadeTier === 'corp' ? 'bg-brand-950 border-brand-500 text-slate-100 font-bold scale-[1.01]' : 'bg-slate-950/40 border-slate-900 text-slate-500'}`}>
+                                                <span className="font-mono text-slate-400 block mb-1">🎯 {activeTrans.sim2.corp}</span>
+                                                <p>{activeTrans.sim2.corpDesc}</p>
+                                            </div>
+
+                                            <div className="flex justify-center my-1">
+                                                <div className={`w-0.5 h-6 ${cascadeTier === 'dept' || cascadeTier === 'indiv' ? 'bg-brand-500' : 'bg-slate-800'}`}></div>
+                                            </div>
+
+                                            {/* Tier 2 Node */}
+                                            <div className={`p-4 rounded-lg border text-xs transition-all ${cascadeTier === 'dept' ? 'bg-tech-950 border-tech-500 text-slate-100 font-bold scale-[1.01]' : 'bg-slate-950/40 border-slate-900 text-slate-500'}`}>
+                                                <span className="font-mono text-slate-400 block mb-1">📊 {activeTrans.sim2.dept}</span>
+                                                <p>{activeTrans.sim2.deptDesc}</p>
+                                            </div>
+
+                                            <div className="flex justify-center my-1">
+                                                <div className={`w-0.5 h-6 ${cascadeTier === 'indiv' ? 'bg-tech-500' : 'bg-slate-800'}`}></div>
+                                            </div>
+
+                                            {/* Tier 3 Node */}
+                                            <div className={`p-4 rounded-lg border text-xs transition-all ${cascadeTier === 'indiv' ? 'bg-purple-950 border-purple-500 text-slate-100 font-bold scale-[1.01]' : 'bg-slate-950/40 border-slate-900 text-slate-500'}`}>
+                                                <span className="font-mono text-slate-400 block mb-1">👤 {activeTrans.sim2.indiv}</span>
+                                                <p>{activeTrans.sim2.indivDesc}</p>
+                                            </div>
+                                        </div>
+
+                                        <p className="text-[11px] text-slate-500 italic text-center mt-4">
+                                            {activeTrans.sim2.tip}
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB 7: SYSTEM SIMULATION 3 */}
+                            {activeTab === 'sim3' && (
+                                <div className="space-y-6">
+                                    <div className="border-b border-slate-900 pb-4">
+                                        <h3 className="text-2xl font-black tracking-tight text-white">{activeTrans.sim3.title}</h3>
+                                        <p className="text-slate-400 text-sm mt-1">{activeTrans.sim3.intro}</p>
+                                    </div>
+
+                                    <div className="flex bg-slate-900/60 p-1 border border-slate-800 rounded-lg max-w-sm">
+                                        <button onClick={() => setWorkflowStyle('linear')} className={`flex-1 text-xs font-bold uppercase py-2 rounded ${workflowStyle === 'linear' ? 'bg-red-950/50 text-red-400 border border-red-900/30' : 'text-slate-400'}`}>
+                                            {activeTrans.sim3.linearBtn}
+                                        </button>
+                                        <button onClick={() => setWorkflowStyle('circular')} className={`flex-1 text-xs font-bold uppercase py-2 rounded ${workflowStyle === 'circular' ? 'bg-brand-950/50 text-brand-400 border border-brand-900/30' : 'text-slate-400'}`}>
+                                            {activeTrans.sim3.loopBtn}
+                                        </button>
+                                    </div>
+
+                                    <div className="glass-panel p-6 rounded-xl min-h-[14rem] flex flex-col justify-center">
+                                        {workflowStyle === 'linear' ? (
+                                            <div className="space-y-5">
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                    {activeTrans.sim3.linearSteps.map((step, idx) => (
+                                                        <div key={idx} className="p-3 bg-red-950/10 border border-red-900/40 rounded text-xs text-red-300 font-mono flex items-center justify-between">
+                                                            <span>{step}</span>
+                                                            <span className="text-red-500 md:hidden">↓</span>
+                                                            <span className="hidden md:inline text-red-500">{idx < 2 ? '➔' : ''}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <p className="text-xs text-red-400 bg-red-950/20 p-3 rounded border border-red-900/50 font-medium">
+                                                    {activeTrans.sim3.linearCritique}
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-5">
+                                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                                    {activeTrans.sim3.loopSteps.map((step, idx) => (
+                                                        <div key={idx} className="p-3 bg-brand-950/10 border border-brand-900/40 rounded text-xs text-brand-300 font-mono flex items-center justify-between animate-pulse">
+                                                            <span>{step}</span>
+                                                            <span className="text-brand-500 md:hidden">↓</span>
+                                                            <span className="hidden md:inline text-brand-500">{idx < 3 ? '➔' : '↺'}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <p className="text-xs text-brand-400 bg-brand-950/20 p-3 rounded border border-brand-900/50 font-medium">
+                                                    {activeTrans.sim3.loopCritique}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB 8: BREAKOUT ROOMS */}
+                            {activeTab === 'breakout' && (
+                                <div className="space-y-6">
+                                    <div className="border-b border-slate-900 pb-4">
+                                        <h3 className="text-2xl font-black tracking-tight text-white">{activeTrans.breakout.title}</h3>
+                                        <p className="text-slate-400 text-sm mt-1">{activeTrans.breakout.intro}</p>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        {activeTrans.breakout.prompts.map((prompt, index) => (
+                                            <div key={index} className="glass-panel p-5 rounded-xl flex gap-4 items-start transition-all hover:translate-x-1">
+                                                <span className="w-6 h-6 rounded-full bg-brand-950 text-brand-400 border border-brand-900/50 flex items-center justify-center text-xs font-mono font-bold shrink-0">
+                                                    {index + 1}
+                                                </span>
+                                                <div className="flex-1">
+                                                    <p className="text-sm font-medium text-slate-200 leading-relaxed">{prompt}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                        </div>
+                    </main>
+                </div>
+            );
+        }
+
+        // --- APPLICATION INITIALIZATION ---
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
